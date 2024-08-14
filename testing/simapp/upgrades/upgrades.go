@@ -3,19 +3,19 @@ package upgrades
 import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
-	consensusparamskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
-	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	consensusparamskeeper "cosmossdk.io/x/consensus/keeper"
+	paramskeeper "cosmossdk.io/x/params/keeper"
+	paramstypes "cosmossdk.io/x/params/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 
-	v6 "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/migrations/v6"
-	clientkeeper "github.com/cosmos/ibc-go/v7/modules/core/02-client/keeper"
-	"github.com/cosmos/ibc-go/v7/modules/core/exported"
-	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
+	v6 "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/migrations/v6"
+	clientkeeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
+	"github.com/cosmos/ibc-go/v8/modules/core/exported"
+	ibctmmigrations "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint/migrations"
 )
 
 const (
@@ -23,9 +23,9 @@ const (
 	V5 = "normal upgrade" // NOTE: keeping as "normal upgrade" as existing tags depend on this name
 	// V6 defines the upgrade name for the ibc-go/v6 upgrade handler.
 	V6 = "v6"
-	// V7 defines the upgrade name for the ibc-go/v7 upgrade handler.
+	// V7 defines the upgrade name for the ibc-go/v8 upgrade handler.
 	V7 = "v7"
-	// V7_1 defines the upgrade name for the ibc-go/v7.1 upgrade handler.
+	// V7_1 defines the upgrade name for the ibc-go/v8.1 upgrade handler.
 	V7_1 = "v7.1"
 )
 
@@ -59,7 +59,7 @@ func CreateV6UpgradeHandler(
 	}
 }
 
-// CreateV7UpgradeHandler creates an upgrade handler for the ibc-go/v7 SimApp upgrade.
+// CreateV7UpgradeHandler creates an upgrade handler for the ibc-go/v8 SimApp upgrade.
 func CreateV7UpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -81,7 +81,7 @@ func CreateV7UpgradeHandler(
 	}
 }
 
-// CreateV7LocalhostUpgradeHandler creates an upgrade handler for the ibc-go/v7.1 SimApp upgrade.
+// CreateV7LocalhostUpgradeHandler creates an upgrade handler for the ibc-go/v8.1 SimApp upgrade.
 func CreateV7LocalhostUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
