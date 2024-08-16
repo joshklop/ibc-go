@@ -7,8 +7,8 @@ import (
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	paramtypes "cosmossdk.io/x/params/types"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"

@@ -3,7 +3,7 @@ package types
 import (
 	"bytes"
 
-	"cosmossdk.io/x/authz"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/gogoproto/jsonpb"
 	"github.com/cosmos/gogoproto/proto"
 

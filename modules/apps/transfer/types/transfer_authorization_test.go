@@ -2,7 +2,7 @@ package types_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"cosmossdk.io/x/authz"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibctesting "github.com/cosmos/ibc-go/v8/testing"

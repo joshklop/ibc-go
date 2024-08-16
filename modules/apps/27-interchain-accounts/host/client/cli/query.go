@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"cosmossdk.io/x/auth/tx"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
