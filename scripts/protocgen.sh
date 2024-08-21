@@ -13,4 +13,5 @@ cd ..
 cp -r github.com/cosmos/ibc-go/v*/modules/* modules/
 rm -rf github.com
 
+echo 'here'
 go mod tidy

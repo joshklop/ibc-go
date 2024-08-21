@@ -2,6 +2,7 @@ package mock
 
 import (
 	"encoding/json"
+	"context"
 	"fmt"
 
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -98,6 +99,12 @@ func NewAppModule(pk PortKeeper) AppModule {
 	}
 }
 
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (AppModule) IsOnePerModuleType() {}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (AppModule) IsAppModule() {}
+
 // RegisterInvariants implements the AppModule interface.
 func (AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {}
 
@@ -129,11 +136,12 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // BeginBlock implements the AppModule interface
-func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
+func (am AppModule) BeginBlock(context.Context) error {
+	return nil
 }
 
 // EndBlock implements the AppModule interface
-func (am AppModule) EndBlock(ctx sdk.Context, req abci.RequestEndBlock) []abci.ValidatorUpdate {
+func (am AppModule) EndBlock(context.Context) []abci.ValidatorUpdate {
 	return []abci.ValidatorUpdate{}
 }
 
