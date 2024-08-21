@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	abcitypes "github.com/cometbft/cometbft/abci/types"
-	tmprotostate "github.com/cometbft/cometbft/proto/tendermint/state"
 	tmstate "github.com/cometbft/cometbft/state"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 )
@@ -91,36 +91,24 @@ func (suite TypesTestSuite) TestAcknowledgement() { //nolint:govet // this is a 
 // This test acts as an indicator that the ABCI error codes may no longer be deterministic.
 func (suite *TypesTestSuite) TestABCICodeDeterminism() {
 	// same ABCI error code used
-	err := sdkerrors.Wrap(sdkerrors.ErrOutOfGas, "error string 1")
-	errSameABCICode := sdkerrors.Wrap(sdkerrors.ErrOutOfGas, "error string 2")
+	err := sdkerrors.Wrap(sdkerrortypes.ErrOutOfGas, "error string 1")
+	errSameABCICode := sdkerrors.Wrap(sdkerrortypes.ErrOutOfGas, "error string 2")
 
 	// different ABCI error code used
-	errDifferentABCICode := sdkerrors.ErrNotFound
+	errDifferentABCICode := sdkerrortypes.ErrNotFound
 
-	deliverTx := sdkerrors.ResponseDeliverTxWithEvents(err, gasUsed, gasWanted, []abcitypes.Event{}, false)
-	responses := tmprotostate.ABCIResponses{
-		DeliverTxs: []*abcitypes.ResponseDeliverTx{
-			&deliverTx,
-		},
-	}
+	deliverTx := sdkerrortypes.ResponseExecTxResultWithEvents(err, gasUsed, gasWanted, []abcitypes.Event{}, false)
+	execTxResults := []*abcitypes.ExecTxResult{deliverTx}
 
-	deliverTxSameABCICode := sdkerrors.ResponseDeliverTxWithEvents(errSameABCICode, gasUsed, gasWanted, []abcitypes.Event{}, false)
-	responsesSameABCICode := tmprotostate.ABCIResponses{
-		DeliverTxs: []*abcitypes.ResponseDeliverTx{
-			&deliverTxSameABCICode,
-		},
-	}
+	deliverTxSameABCICode := sdkerrortypes.ResponseExecTxResultWithEvents(errSameABCICode, gasUsed, gasWanted, []abcitypes.Event{}, false)
+	resultsSameABCICode := []*abcitypes.ExecTxResult{deliverTxSameABCICode}
 
-	deliverTxDifferentABCICode := sdkerrors.ResponseDeliverTxWithEvents(errDifferentABCICode, gasUsed, gasWanted, []abcitypes.Event{}, false)
-	responsesDifferentABCICode := tmprotostate.ABCIResponses{
-		DeliverTxs: []*abcitypes.ResponseDeliverTx{
-			&deliverTxDifferentABCICode,
-		},
-	}
+	deliverTxDifferentABCICode := sdkerrortypes.ResponseExecTxResultWithEvents(errDifferentABCICode, gasUsed, gasWanted, []abcitypes.Event{}, false)
+	resultsDifferentABCICode := []*abcitypes.ExecTxResult{deliverTxDifferentABCICode}
 
-	hash := tmstate.ABCIResponsesResultsHash(&responses)
-	hashSameABCICode := tmstate.ABCIResponsesResultsHash(&responsesSameABCICode)
-	hashDifferentABCICode := tmstate.ABCIResponsesResultsHash(&responsesDifferentABCICode)
+	hash := tmstate.TxResultsHash(execTxResults)
+	hashSameABCICode := tmstate.TxResultsHash(resultsSameABCICode)
+	hashDifferentABCICode := tmstate.TxResultsHash(resultsDifferentABCICode)
 
 	suite.Require().Equal(hash, hashSameABCICode)
 	suite.Require().NotEqual(hash, hashDifferentABCICode)
@@ -130,11 +118,11 @@ func (suite *TypesTestSuite) TestABCICodeDeterminism() {
 // ABCI error code are used in constructing the acknowledgement error string
 func (suite *TypesTestSuite) TestAcknowledgementError() {
 	// same ABCI error code used
-	err := sdkerrors.Wrap(sdkerrors.ErrOutOfGas, "error string 1")
-	errSameABCICode := sdkerrors.Wrap(sdkerrors.ErrOutOfGas, "error string 2")
+	err := sdkerrors.Wrap(sdkerrortypes.ErrOutOfGas, "error string 1")
+	errSameABCICode := sdkerrors.Wrap(sdkerrortypes.ErrOutOfGas, "error string 2")
 
 	// different ABCI error code used
-	errDifferentABCICode := sdkerrors.ErrNotFound
+	errDifferentABCICode := sdkerrortypes.ErrNotFound
 
 	ack := types.NewErrorAcknowledgement(err)
 	ackSameABCICode := types.NewErrorAcknowledgement(errSameABCICode)

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
@@ -49,7 +50,7 @@ func (suite *TransferTestSuite) TestHandleMsgTransfer() {
 	//	originalBalance := suite.chainA.GetSimApp().BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), sdk.DefaultBondDenom)
 	timeoutHeight := clienttypes.NewHeight(1, 110)
 
-	amount, ok := sdk.NewIntFromString("9223372036854775808") // 2^63 (one above int64)
+	amount, ok := sdkmath.NewIntFromString("9223372036854775808") // 2^63 (one above int64)
 	suite.Require().True(ok)
 	coinToSendToB := sdk.NewCoin(sdk.DefaultBondDenom, amount)
 
@@ -122,7 +123,7 @@ func (suite *TransferTestSuite) TestHandleMsgTransfer() {
 	// check that module account escrow address is empty
 	escrowAddress := types.GetEscrowAddress(packet.GetDestPort(), packet.GetDestChannel())
 	balance = suite.chainB.GetSimApp().BankKeeper.GetBalance(suite.chainB.GetContext(), escrowAddress, sdk.DefaultBondDenom)
-	suite.Require().Equal(sdk.NewCoin(sdk.DefaultBondDenom, sdk.ZeroInt()), balance)
+	suite.Require().Equal(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.ZeroInt()), balance)
 
 	// check that balance on chain B is empty
 	balance = suite.chainC.GetSimApp().BankKeeper.GetBalance(suite.chainC.GetContext(), suite.chainC.SenderAccount.GetAddress(), voucherDenomTrace.IBCDenom())

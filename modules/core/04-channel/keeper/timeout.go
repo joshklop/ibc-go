@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
 	connectiontypes "github.com/cosmos/ibc-go/v8/modules/core/03-connection/types"

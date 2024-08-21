@@ -2,7 +2,8 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
@@ -29,18 +30,18 @@ func (a TransferAuthorization) MsgTypeURL() string {
 func (a TransferAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.AcceptResponse, error) {
 	msgTransfer, ok := msg.(*MsgTransfer)
 	if !ok {
-		return authz.AcceptResponse{}, sdkerrors.Wrap(sdkerrors.ErrInvalidType, "type mismatch")
+		return authz.AcceptResponse{}, sdkerrors.Wrap(sdkerrortypes.ErrInvalidType, "type mismatch")
 	}
 
 	for index, allocation := range a.Allocations {
 		if allocation.SourceChannel == msgTransfer.SourceChannel && allocation.SourcePort == msgTransfer.SourcePort {
 			limitLeft, isNegative := allocation.SpendLimit.SafeSub(msgTransfer.Token)
 			if isNegative {
-				return authz.AcceptResponse{}, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "requested amount is more than spend limit")
+				return authz.AcceptResponse{}, sdkerrors.Wrapf(sdkerrortypes.ErrInsufficientFunds, "requested amount is more than spend limit")
 			}
 
 			if !isAllowedAddress(ctx, msgTransfer.Receiver, allocation.AllowList) {
-				return authz.AcceptResponse{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "not allowed address for transfer")
+				return authz.AcceptResponse{}, sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "not allowed address for transfer")
 			}
 
 			if limitLeft.IsZero() {
@@ -64,7 +65,7 @@ func (a TransferAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.Accep
 			}}, nil
 		}
 	}
-	return authz.AcceptResponse{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "requested port and channel allocation does not exist")
+	return authz.AcceptResponse{}, sdkerrors.Wrapf(sdkerrortypes.ErrNotFound, "requested port and channel allocation does not exist")
 }
 
 // ValidateBasic implements Authorization.ValidateBasic.
@@ -83,11 +84,11 @@ func (a TransferAuthorization) ValidateBasic() error {
 		foundChannels[allocation.SourceChannel] = true
 
 		if allocation.SpendLimit == nil {
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "spend limit cannot be nil")
+			return sdkerrors.Wrap(sdkerrortypes.ErrInvalidCoins, "spend limit cannot be nil")
 		}
 
 		if err := allocation.SpendLimit.Validate(); err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, err.Error())
+			return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidCoins, err.Error())
 		}
 
 		if err := host.PortIdentifierValidator(allocation.SourcePort); err != nil {

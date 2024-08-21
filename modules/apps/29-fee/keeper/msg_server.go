@@ -4,7 +4,8 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
@@ -26,7 +27,7 @@ func (k Keeper) RegisterPayee(goCtx context.Context, msg *types.MsgRegisterPayee
 	}
 
 	if k.bankKeeper.BlockedAddr(payee) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not authorized to be a payee", payee)
+		return nil, sdkerrors.Wrapf(sdkerrortypes.ErrUnauthorized, "%s is not authorized to be a payee", payee)
 	}
 
 	// only register payee address if the channel exists and is fee enabled
@@ -97,7 +98,7 @@ func (k Keeper) PayPacketFee(goCtx context.Context, msg *types.MsgPayPacketFee) 
 	}
 
 	if k.bankKeeper.BlockedAddr(refundAcc) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to escrow fees", refundAcc)
+		return nil, sdkerrors.Wrapf(sdkerrortypes.ErrUnauthorized, "%s is not allowed to escrow fees", refundAcc)
 	}
 
 	// get the next sequence
@@ -142,7 +143,7 @@ func (k Keeper) PayPacketFeeAsync(goCtx context.Context, msg *types.MsgPayPacket
 	}
 
 	if k.bankKeeper.BlockedAddr(refundAcc) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to escrow fees", refundAcc)
+		return nil, sdkerrors.Wrapf(sdkerrortypes.ErrUnauthorized, "%s is not allowed to escrow fees", refundAcc)
 	}
 
 	nextSeqSend, found := k.GetNextSequenceSend(ctx, msg.PacketId.PortId, msg.PacketId.ChannelId)

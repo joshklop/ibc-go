@@ -4,7 +4,8 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 )
@@ -80,12 +81,12 @@ func (f Fee) Validate() error {
 	}
 
 	if len(errFees) > 0 {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "contains invalid fees: %s", strings.Join(errFees, " , "))
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidCoins, "contains invalid fees: %s", strings.Join(errFees, " , "))
 	}
 
 	// if all three fee's are zero or empty return an error
 	if f.AckFee.IsZero() && f.RecvFee.IsZero() && f.TimeoutFee.IsZero() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "all fees are zero")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidCoins, "all fees are zero")
 	}
 
 	return nil

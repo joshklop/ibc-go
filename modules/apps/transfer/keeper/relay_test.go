@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	"context"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -71,7 +72,7 @@ func (suite *KeeperTestSuite) TestSendTransfer() {
 		{
 			"send coin failed",
 			func() {
-				coin = sdk.NewCoin("randomdenom", sdk.NewInt(100))
+				coin = sdk.NewCoin("randomdenom", math.NewInt(100))
 			}, false,
 		},
 		{
@@ -83,7 +84,7 @@ func (suite *KeeperTestSuite) TestSendTransfer() {
 		{
 			"send from module account failed, insufficient balance",
 			func() {
-				coin = types.GetTransferCoin(path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, coin.Denom, coin.Amount.Add(sdk.NewInt(1)))
+				coin = types.GetTransferCoin(path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, coin.Denom, coin.Amount.Add(math.NewInt(1)))
 			}, false,
 		},
 		{
@@ -110,7 +111,7 @@ func (suite *KeeperTestSuite) TestSendTransfer() {
 			path = NewTransferPath(suite.chainA, suite.chainB)
 			suite.coordinator.Setup(path)
 
-			coin = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))
+			coin = sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100))
 			sender = suite.chainA.SenderAccount.GetAddress()
 			memo = ""
 			timeoutHeight = suite.chainB.GetTimeoutHeight()
@@ -177,7 +178,7 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 		}, false, true},
 		{"empty coin", func() {
 			trace = types.DenomTrace{}
-			amount = sdk.ZeroInt()
+			amount = math.ZeroInt()
 		}, true, false},
 		{"invalid receiver address", func() {
 			receiver = "gaia1scqhwpgsmr6vmztaa7suurfl52my6nd2kmrudl"
@@ -186,12 +187,12 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 		// onRecvPacket
 		// - coin from chain chainA
 		{"failure: mint zero coin", func() {
-			amount = sdk.ZeroInt()
+			amount = math.ZeroInt()
 		}, false, false},
 
 		// - coin being sent back to original chain (chainB)
 		{"tries to unescrow more tokens than allowed", func() {
-			amount = sdk.NewInt(1000000)
+			amount = math.NewInt(1000000)
 		}, true, false},
 
 		// - coin being sent to module address on chainA
@@ -216,12 +217,12 @@ func (suite *KeeperTestSuite) TestOnRecvPacket() {
 			receiver = suite.chainB.SenderAccount.GetAddress().String() // must be explicitly changed in malleate
 
 			memo = ""                // can be explicitly changed in malleate
-			amount = sdk.NewInt(100) // must be explicitly changed in malleate
+			amount = math.NewInt(100) // must be explicitly changed in malleate
 			seq := uint64(1)
 
 			if tc.recvIsSource {
 				// send coin from chainB to chainA, receive them, acknowledge them, and send back to chainB
-				coinFromBToA := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))
+				coinFromBToA := sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100))
 				transferMsg := types.NewMsgTransfer(path.EndpointB.ChannelConfig.PortID, path.EndpointB.ChannelID, coinFromBToA, suite.chainB.SenderAccount.GetAddress().String(), suite.chainA.SenderAccount.GetAddress().String(), clienttypes.NewHeight(1, 110), 0, memo)
 				res, err := suite.chainB.SendMsgs(transferMsg)
 				suite.Require().NoError(err) // message committed
@@ -289,7 +290,7 @@ func (suite *KeeperTestSuite) TestOnAcknowledgementPacket() {
 			trace = types.ParseDenomTrace(sdk.DefaultBondDenom)
 			coin := sdk.NewCoin(sdk.DefaultBondDenom, amount)
 
-			suite.Require().NoError(banktestutil.FundAccount(suite.chainA.GetSimApp().BankKeeper, suite.chainA.GetContext(), escrow, sdk.NewCoins(coin)))
+			suite.Require().NoError(banktestutil.FundAccount(context.Background(), suite.chainA.GetSimApp().BankKeeper, escrow, sdk.NewCoins(coin)))
 		}, false, true},
 		{
 			"unsuccessful refund from source", failedAck,
@@ -304,7 +305,7 @@ func (suite *KeeperTestSuite) TestOnAcknowledgementPacket() {
 				trace = types.ParseDenomTrace(types.GetPrefixedDenom(path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, sdk.DefaultBondDenom))
 				coin := sdk.NewCoin(trace.IBCDenom(), amount)
 
-				suite.Require().NoError(banktestutil.FundAccount(suite.chainA.GetSimApp().BankKeeper, suite.chainA.GetContext(), escrow, sdk.NewCoins(coin)))
+				suite.Require().NoError(banktestutil.FundAccount(context.Background(), suite.chainA.GetSimApp().BankKeeper, escrow, sdk.NewCoins(coin)))
 			}, false, true,
 		},
 	}
@@ -316,7 +317,7 @@ func (suite *KeeperTestSuite) TestOnAcknowledgementPacket() {
 			suite.SetupTest() // reset
 			path = NewTransferPath(suite.chainA, suite.chainB)
 			suite.coordinator.Setup(path)
-			amount = sdk.NewInt(100) // must be explicitly changed
+			amount = math.NewInt(100) // must be explicitly changed
 
 			tc.malleate()
 
@@ -368,7 +369,7 @@ func (suite *KeeperTestSuite) TestOnTimeoutPacket() {
 				trace = types.ParseDenomTrace(sdk.DefaultBondDenom)
 				coin := sdk.NewCoin(trace.IBCDenom(), amount)
 
-				suite.Require().NoError(banktestutil.FundAccount(suite.chainA.GetSimApp().BankKeeper, suite.chainA.GetContext(), escrow, sdk.NewCoins(coin)))
+				suite.Require().NoError(banktestutil.FundAccount(context.Background(), suite.chainA.GetSimApp().BankKeeper, escrow, sdk.NewCoins(coin)))
 			}, true,
 		},
 		{
@@ -378,7 +379,7 @@ func (suite *KeeperTestSuite) TestOnTimeoutPacket() {
 				trace = types.ParseDenomTrace(types.GetPrefixedDenom(path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, sdk.DefaultBondDenom))
 				coin := sdk.NewCoin(trace.IBCDenom(), amount)
 
-				suite.Require().NoError(banktestutil.FundAccount(suite.chainA.GetSimApp().BankKeeper, suite.chainA.GetContext(), escrow, sdk.NewCoins(coin)))
+				suite.Require().NoError(banktestutil.FundAccount(context.Background(), suite.chainA.GetSimApp().BankKeeper, escrow, sdk.NewCoins(coin)))
 			}, true,
 		},
 		{
@@ -397,7 +398,7 @@ func (suite *KeeperTestSuite) TestOnTimeoutPacket() {
 			"mint failed",
 			func() {
 				trace = types.ParseDenomTrace(types.GetPrefixedDenom(path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, sdk.DefaultBondDenom))
-				amount = sdk.OneInt()
+				amount = math.OneInt()
 				sender = "invalid address"
 			}, false,
 		},
@@ -411,7 +412,7 @@ func (suite *KeeperTestSuite) TestOnTimeoutPacket() {
 
 			path = NewTransferPath(suite.chainA, suite.chainB)
 			suite.coordinator.Setup(path)
-			amount = sdk.NewInt(100) // must be explicitly changed
+			amount = math.NewInt(100) // must be explicitly changed
 			sender = suite.chainA.SenderAccount.GetAddress().String()
 
 			tc.malleate()

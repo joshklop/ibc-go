@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
@@ -330,7 +331,7 @@ func (suite *KeeperTestSuite) TestPayPacketFee() {
 				suite.Require().Error(err)
 
 				escrowBalance := suite.chainA.GetSimApp().BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.GetSimApp().IBCFeeKeeper.GetFeeModuleAddress(), sdk.DefaultBondDenom)
-				suite.Require().Equal(sdk.NewInt(0), escrowBalance.Amount)
+				suite.Require().Equal(sdkmath.NewInt(0), escrowBalance.Amount)
 			}
 		})
 	}
@@ -543,7 +544,7 @@ func (suite *KeeperTestSuite) TestPayPacketFeeAsync() {
 				suite.Require().Error(err)
 
 				escrowBalance := suite.chainA.GetSimApp().BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.GetSimApp().IBCFeeKeeper.GetFeeModuleAddress(), sdk.DefaultBondDenom)
-				suite.Require().Equal(sdk.NewInt(0), escrowBalance.Amount)
+				suite.Require().Equal(sdkmath.NewInt(0), escrowBalance.Amount)
 			}
 		})
 	}

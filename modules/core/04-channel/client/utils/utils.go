@@ -6,7 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	clientutils "github.com/cosmos/ibc-go/v8/modules/core/02-client/client/utils"
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
@@ -140,7 +141,7 @@ func QueryLatestConsensusState(
 
 	clientHeight, ok := clientState.GetLatestHeight().(clienttypes.Height)
 	if !ok {
-		return nil, clienttypes.Height{}, clienttypes.Height{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidHeight, "invalid height type. expected type: %T, got: %T",
+		return nil, clienttypes.Height{}, clienttypes.Height{}, sdkerrors.Wrapf(sdkerrortypes.ErrInvalidHeight, "invalid height type. expected type: %T, got: %T",
 			clienttypes.Height{}, clientHeight)
 	}
 	res, err := QueryChannelConsensusState(clientCtx, portID, channelID, clientHeight, false)

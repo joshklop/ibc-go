@@ -2,6 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"cosmossdk.io/store"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
 	connectiontypes "github.com/cosmos/ibc-go/v8/modules/core/03-connection/types"
@@ -16,7 +17,7 @@ type ClientKeeper interface {
 	GetClientStatus(ctx sdk.Context, clientState exported.ClientState, clientID string) exported.Status
 	GetClientState(ctx sdk.Context, clientID string) (exported.ClientState, bool)
 	GetClientConsensusState(ctx sdk.Context, clientID string, height exported.Height) (exported.ConsensusState, bool)
-	ClientStore(ctx sdk.Context, clientID string) sdk.KVStore
+	ClientStore(ctx sdk.Context, clientID string) store.KVStore
 }
 
 // ConnectionKeeper expected account IBC connection keeper

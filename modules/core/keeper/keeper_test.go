@@ -3,8 +3,8 @@ package keeper_test
 import (
 	"testing"
 	"time"
+	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -47,12 +47,12 @@ type MockStakingKeeper struct {
 	mockField string
 }
 
-func (d MockStakingKeeper) GetHistoricalInfo(ctx sdk.Context, height int64) (stakingtypes.HistoricalInfo, bool) {
-	return stakingtypes.HistoricalInfo{}, true
+func (d MockStakingKeeper) GetHistoricalInfo(ctx context.Context, height int64) (stakingtypes.HistoricalInfo, error) {
+	return stakingtypes.HistoricalInfo{}, nil
 }
 
-func (d MockStakingKeeper) UnbondingTime(ctx sdk.Context) time.Duration {
-	return 0
+func (d MockStakingKeeper) UnbondingTime(ctx context.Context) (time.Duration, error) {
+	return 0, nil
 }
 
 // Test ibckeeper.NewKeeper used to initialize IBCKeeper when creating an app instance.

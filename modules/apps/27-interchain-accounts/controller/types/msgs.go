@@ -4,7 +4,8 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
@@ -28,7 +29,7 @@ func (msg MsgRegisterInterchainAccount) ValidateBasic() error {
 	}
 
 	if strings.TrimSpace(msg.Owner) == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "owner address cannot be empty")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidAddress, "owner address cannot be empty")
 	}
 
 	return nil
@@ -61,7 +62,7 @@ func (msg MsgSendTx) ValidateBasic() error {
 	}
 
 	if strings.TrimSpace(msg.Owner) == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "owner address cannot be empty")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidAddress, "owner address cannot be empty")
 	}
 
 	if err := msg.PacketData.ValidateBasic(); err != nil {
@@ -69,7 +70,7 @@ func (msg MsgSendTx) ValidateBasic() error {
 	}
 
 	if msg.RelativeTimeout == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "relative timeout cannot be zero")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidRequest, "relative timeout cannot be zero")
 	}
 
 	return nil

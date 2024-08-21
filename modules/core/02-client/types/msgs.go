@@ -3,7 +3,8 @@ package types
 import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
 	"github.com/cosmos/ibc-go/v8/modules/core/exported"
@@ -48,7 +49,7 @@ func NewMsgCreateClient(
 func (msg MsgCreateClient) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	clientState, err := UnpackClientState(msg.ClientState)
 	if err != nil {
@@ -111,7 +112,7 @@ func NewMsgUpdateClient(id string, clientMsg exported.ClientMessage, signer stri
 func (msg MsgUpdateClient) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	clientMsg, err := UnpackClientMessage(msg.ClientMessage)
 	if err != nil {
@@ -190,7 +191,7 @@ func (msg MsgUpgradeClient) ValidateBasic() error {
 	}
 	_, err = sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return host.ClientIdentifierValidator(msg.ClientId)
 }
@@ -236,7 +237,7 @@ func NewMsgSubmitMisbehaviour(clientID string, misbehaviour exported.ClientMessa
 func (msg MsgSubmitMisbehaviour) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	misbehaviour, err := UnpackClientMessage(msg.Misbehaviour)
 	if err != nil {

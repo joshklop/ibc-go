@@ -2,6 +2,7 @@ package fee_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/gogoproto/proto"
@@ -128,7 +129,7 @@ func (suite *FeeTestSuite) TestFeeInterchainAccounts() {
 	suite.Require().True(found)
 
 	// fund the interchain account on chainB
-	coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000)))
+	coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100000)))
 	msgBankSend := &banktypes.MsgSend{
 		FromAddress: suite.chainB.SenderAccount.GetAddress().String(),
 		ToAddress:   interchainAccountAddr,
@@ -144,7 +145,7 @@ func (suite *FeeTestSuite) TestFeeInterchainAccounts() {
 	msgDelegate := &stakingtypes.MsgDelegate{
 		DelegatorAddress: interchainAccountAddr,
 		ValidatorAddress: validatorAddr.String(),
-		Amount:           sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000)),
+		Amount:           sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(5000)),
 	}
 
 	data, err := icatypes.SerializeCosmosTx(suite.chainA.GetSimApp().AppCodec(), []proto.Message{msgDelegate})

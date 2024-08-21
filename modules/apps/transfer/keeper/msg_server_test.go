@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	ibctesting "github.com/cosmos/ibc-go/v8/testing"
+	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 )
@@ -86,7 +87,7 @@ func (suite *KeeperTestSuite) TestMsgTransfer() {
 			path := NewTransferPath(suite.chainA, suite.chainB)
 			suite.coordinator.Setup(path)
 
-			coin := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100))
+			coin := sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100))
 			msg = types.NewMsgTransfer(
 				path.EndpointA.ChannelConfig.PortID,
 				path.EndpointA.ChannelID,

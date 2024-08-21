@@ -5,7 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	"cosmossdk.io/store"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
@@ -25,7 +27,7 @@ import (
 //   - any Tendermint chain specified parameter in upgraded client such as ChainID, UnbondingPeriod,
 //     and ProofSpecs do not match parameters set by committed client
 func (cs ClientState) VerifyUpgradeAndUpdateState(
-	ctx sdk.Context, cdc codec.BinaryCodec, clientStore sdk.KVStore,
+	ctx sdk.Context, cdc codec.BinaryCodec, clientStore store.KVStore,
 	upgradedClient exported.ClientState, upgradedConsState exported.ConsensusState,
 	proofUpgradeClient, proofUpgradeConsState []byte,
 ) error {
@@ -37,7 +39,7 @@ func (cs ClientState) VerifyUpgradeAndUpdateState(
 	lastHeight := cs.GetLatestHeight()
 
 	if !upgradedClient.GetLatestHeight().GT(lastHeight) {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidHeight, "upgraded client height %s must be at greater than current client height %s",
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidHeight, "upgraded client height %s must be at greater than current client height %s",
 			upgradedClient.GetLatestHeight(), lastHeight)
 	}
 

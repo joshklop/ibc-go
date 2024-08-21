@@ -5,7 +5,9 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkmath "cosmossdk.io/math"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var (
@@ -40,7 +42,7 @@ func NewFungibleTokenPacketData(
 // NOTE: The addresses formats are not validated as the sender and recipient can have different
 // formats defined by their corresponding chains that are not known to IBC.
 func (ftpd FungibleTokenPacketData) ValidateBasic() error {
-	amount, ok := sdk.NewIntFromString(ftpd.Amount)
+	amount, ok := sdkmath.NewIntFromString(ftpd.Amount)
 	if !ok {
 		return sdkerrors.Wrapf(ErrInvalidAmount, "unable to parse transfer amount (%s) into math.Int", ftpd.Amount)
 	}
@@ -48,10 +50,10 @@ func (ftpd FungibleTokenPacketData) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidAmount, "amount must be strictly positive: got %d", amount)
 	}
 	if strings.TrimSpace(ftpd.Sender) == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "sender address cannot be blank")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidAddress, "sender address cannot be blank")
 	}
 	if strings.TrimSpace(ftpd.Receiver) == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "receiver address cannot be blank")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidAddress, "receiver address cannot be blank")
 	}
 	return ValidatePrefixedDenom(ftpd.Denom)
 }

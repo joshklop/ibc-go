@@ -4,7 +4,8 @@ import (
 	"encoding/base64"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
 	commitmenttypes "github.com/cosmos/ibc-go/v8/modules/core/23-commitment/types"
@@ -46,7 +47,7 @@ func (msg MsgChannelOpenInit) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return msg.Channel.ValidateBasic()
 }
@@ -108,7 +109,7 @@ func (msg MsgChannelOpenTry) ValidateBasic() error {
 
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return msg.Channel.ValidateBasic()
 }
@@ -158,7 +159,7 @@ func (msg MsgChannelOpenAck) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return nil
 }
@@ -203,7 +204,7 @@ func (msg MsgChannelOpenConfirm) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return nil
 }
@@ -242,7 +243,7 @@ func (msg MsgChannelCloseInit) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return nil
 }
@@ -287,7 +288,7 @@ func (msg MsgChannelCloseConfirm) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return nil
 }
@@ -332,7 +333,7 @@ func (msg MsgChannelCloseFrozen) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return nil
 }
@@ -370,7 +371,7 @@ func (msg MsgRecvPacket) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return msg.Packet.ValidateBasic()
 }
@@ -415,11 +416,11 @@ func (msg MsgTimeout) ValidateBasic() error {
 		return sdkerrors.Wrap(commitmenttypes.ErrInvalidProof, "cannot submit an empty unreceived proof")
 	}
 	if msg.NextSequenceRecv == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidSequence, "next sequence receive cannot be 0")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidSequence, "next sequence receive cannot be 0")
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return msg.Packet.ValidateBasic()
 }
@@ -454,7 +455,7 @@ func NewMsgTimeoutOnClose(
 // ValidateBasic implements sdk.Msg
 func (msg MsgTimeoutOnClose) ValidateBasic() error {
 	if msg.NextSequenceRecv == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidSequence, "next sequence receive cannot be 0")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidSequence, "next sequence receive cannot be 0")
 	}
 	if len(msg.ProofUnreceived) == 0 {
 		return sdkerrors.Wrap(commitmenttypes.ErrInvalidProof, "cannot submit an empty proof")
@@ -464,7 +465,7 @@ func (msg MsgTimeoutOnClose) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return msg.Packet.ValidateBasic()
 }
@@ -508,7 +509,7 @@ func (msg MsgAcknowledgement) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	return msg.Packet.ValidateBasic()
 }

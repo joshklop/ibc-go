@@ -4,7 +4,8 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
 	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
@@ -48,18 +49,18 @@ func (msg MsgTransfer) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "invalid source channel ID")
 	}
 	if !msg.Token.IsValid() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, msg.Token.String())
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidCoins, msg.Token.String())
 	}
 	if !msg.Token.IsPositive() {
-		return sdkerrors.Wrap(sdkerrors.ErrInsufficientFunds, msg.Token.String())
+		return sdkerrors.Wrap(sdkerrortypes.ErrInsufficientFunds, msg.Token.String())
 	}
 	// NOTE: sender format must be validated as it is required by the GetSigners function.
 	_, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "string could not be parsed as address: %v", err)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidAddress, "string could not be parsed as address: %v", err)
 	}
 	if strings.TrimSpace(msg.Receiver) == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "missing recipient address")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidAddress, "missing recipient address")
 	}
 	return ValidateIBCDenom(msg.Token.Denom)
 }

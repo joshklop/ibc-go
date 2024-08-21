@@ -1,7 +1,8 @@
 package types
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	commitmenttypes "github.com/cosmos/ibc-go/v8/modules/core/23-commitment/types"
 	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
@@ -54,7 +55,7 @@ func (c ConnectionEnd) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "invalid client ID")
 	}
 	if len(c.Versions) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidVersion, "empty connection versions")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidVersion, "empty connection versions")
 	}
 	for _, version := range c.Versions {
 		if err := ValidateVersion(version); err != nil {

@@ -7,10 +7,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	connectiontypes "github.com/cosmos/ibc-go/v8/modules/core/03-connection/types"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	commitmenttypes "github.com/cosmos/ibc-go/v8/modules/core/23-commitment/types"
+	"cosmossdk.io/store"
 	"github.com/cosmos/ibc-go/v8/modules/core/exported"
 	tmclient "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 )
@@ -19,7 +20,7 @@ import (
 // since consensus state was submitted before allowing verification to continue.
 func VerifyDelayPeriodPassed(
 	ctx sdk.Context,
-	store sdk.KVStore,
+	store store.KVStore,
 	proofHeight exported.Height,
 	timeDelay uint64,
 	expectedTimePerBlock uint64,

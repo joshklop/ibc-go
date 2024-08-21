@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 
 	clientutils "github.com/cosmos/ibc-go/v8/modules/core/02-client/client/utils"
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"

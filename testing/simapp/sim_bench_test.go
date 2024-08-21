@@ -16,7 +16,7 @@ import (
 // /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/ibc-go/v8/testing/simapp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
 func BenchmarkFullAppSimulation(b *testing.B) {
 	b.ReportAllocs()
-	config, db, dir, logger, _, err := SetupSimulation("goleveldb-app-sim", "Simulation")
+	config, db, dir, logger, _, err := SetupSimulation(b, "goleveldb-app-sim", "Simulation")
 	if err != nil {
 		b.Fatalf("simulation setup failed: %s", err.Error())
 	}
@@ -60,7 +60,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 
 func BenchmarkInvariants(b *testing.B) {
 	b.ReportAllocs()
-	config, db, dir, logger, _, err := SetupSimulation("leveldb-app-invariant-bench", "Simulation")
+	config, db, dir, logger, _, err := SetupSimulation(b, "leveldb-app-invariant-bench", "Simulation")
 	if err != nil {
 		b.Fatalf("simulation setup failed: %s", err.Error())
 	}

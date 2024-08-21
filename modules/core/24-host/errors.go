@@ -1,7 +1,7 @@
 package host
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 )
 
 // SubModuleName defines the ICS 24 host

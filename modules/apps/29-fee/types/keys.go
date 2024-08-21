@@ -5,7 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 )
@@ -59,12 +60,12 @@ func ParseKeyFeeEnabled(key string) (portID, channelID string, err error) {
 	keySplit := strings.Split(key, "/")
 	if len(keySplit) != 3 {
 		return "", "", sdkerrors.Wrapf(
-			sdkerrors.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 3, len(keySplit),
+			sdkerrortypes.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 3, len(keySplit),
 		)
 	}
 
 	if keySplit[0] != FeeEnabledKeyPrefix {
-		return "", "", sdkerrors.Wrapf(sdkerrors.ErrLogic, "key prefix is incorrect: expected %s, got %s", FeeEnabledKeyPrefix, keySplit[0])
+		return "", "", sdkerrors.Wrapf(sdkerrortypes.ErrLogic, "key prefix is incorrect: expected %s, got %s", FeeEnabledKeyPrefix, keySplit[0])
 	}
 
 	portID = keySplit[1]
@@ -83,7 +84,7 @@ func ParseKeyPayeeAddress(key string) (relayerAddr, channelID string, err error)
 	keySplit := strings.Split(key, "/")
 	if len(keySplit) != 3 {
 		return "", "", sdkerrors.Wrapf(
-			sdkerrors.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 3, len(keySplit),
+			sdkerrortypes.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 3, len(keySplit),
 		)
 	}
 
@@ -100,7 +101,7 @@ func ParseKeyCounterpartyPayee(key string) (address string, channelID string, er
 	keySplit := strings.Split(key, "/")
 	if len(keySplit) != 3 {
 		return "", "", sdkerrors.Wrapf(
-			sdkerrors.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 3, len(keySplit),
+			sdkerrortypes.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 3, len(keySplit),
 		)
 	}
 
@@ -117,7 +118,7 @@ func ParseKeyRelayerAddressForAsyncAck(key string) (channeltypes.PacketId, error
 	keySplit := strings.Split(key, "/")
 	if len(keySplit) != 4 {
 		return channeltypes.PacketId{}, sdkerrors.Wrapf(
-			sdkerrors.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 4, len(keySplit),
+			sdkerrortypes.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 4, len(keySplit),
 		)
 	}
 
@@ -140,7 +141,7 @@ func ParseKeyFeesInEscrow(key string) (channeltypes.PacketId, error) {
 	keySplit := strings.Split(key, "/")
 	if len(keySplit) != 4 {
 		return channeltypes.PacketId{}, sdkerrors.Wrapf(
-			sdkerrors.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 4, len(keySplit),
+			sdkerrortypes.ErrLogic, "key provided is incorrect: the key split has incorrect length, expected %d, got %d", 4, len(keySplit),
 		)
 	}
 

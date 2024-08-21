@@ -4,7 +4,8 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
@@ -31,7 +32,7 @@ func (msg MsgRegisterPayee) ValidateBasic() error {
 	}
 
 	if msg.Relayer == msg.Payee {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "relayer address and payee must not be equal")
+		return sdkerrors.Wrap(sdkerrortypes.ErrInvalidRequest, "relayer address and payee must not be equal")
 	}
 
 	_, err := sdk.AccAddressFromBech32(msg.Relayer)

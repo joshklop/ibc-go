@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -77,7 +78,7 @@ func GetCmdPacketEvents() *cobra.Command {
 				fmt.Sprintf("%s.%s='%d'", channeltypes.EventTypeRecvPacket, channeltypes.AttributeKeySequence, seq),
 			}
 
-			result, err := tx.QueryTxsByEvents(clientCtx, searchEvents, 1, 1, "")
+			result, err := tx.QueryTxsByEvents(clientCtx, 1, 1, strings.Join(searchEvents, " AND "), "")
 			if err != nil {
 				return err
 			}

@@ -4,7 +4,8 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
 )
@@ -66,7 +67,7 @@ func (gs GenesisState) Validate() error {
 	// Validate RegisteredPayees
 	for _, registeredPayee := range gs.RegisteredPayees {
 		if registeredPayee.Relayer == registeredPayee.Payee {
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "relayer address and payee address must not be equal")
+			return sdkerrors.Wrap(sdkerrortypes.ErrInvalidAddress, "relayer address and payee address must not be equal")
 		}
 
 		if _, err := sdk.AccAddressFromBech32(registeredPayee.Relayer); err != nil {

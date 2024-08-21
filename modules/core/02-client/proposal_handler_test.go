@@ -2,6 +2,7 @@ package client_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
@@ -64,7 +65,7 @@ func (suite *ClientTestSuite) TestNewClientUpdateProposalHandler() {
 					Title:       ibctesting.Title,
 					Description: ibctesting.Description,
 					Recipient:   suite.chainA.SenderAccount.GetAddress().String(),
-					Amount:      sdk.NewCoins(sdk.NewCoin("communityfunds", sdk.NewInt(10))),
+					Amount:      sdk.NewCoins(sdk.NewCoin("communityfunds", sdkmath.NewInt(10))),
 				}
 			}, false,
 		},

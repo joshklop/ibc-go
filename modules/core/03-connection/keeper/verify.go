@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"math"
 
+	"cosmossdk.io/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
 	connectiontypes "github.com/cosmos/ibc-go/v8/modules/core/03-connection/types"
@@ -129,7 +131,7 @@ func (k Keeper) VerifyConnectionState(
 
 	connectionEnd, ok := counterpartyConnection.(connectiontypes.ConnectionEnd)
 	if !ok {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid connection type %T", counterpartyConnection)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidType, "invalid connection type %T", counterpartyConnection)
 	}
 
 	bz, err := k.cdc.Marshal(&connectionEnd)
@@ -177,7 +179,7 @@ func (k Keeper) VerifyChannelState(
 
 	channelEnd, ok := channel.(channeltypes.Channel)
 	if !ok {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid channel type %T", channel)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidType, "invalid channel type %T", channel)
 	}
 
 	bz, err := k.cdc.Marshal(&channelEnd)
@@ -384,7 +386,7 @@ func (k Keeper) getBlockDelay(ctx sdk.Context, connection exported.ConnectionI) 
 
 // getClientStateAndVerificationStore returns the client state and associated KVStore for the provided client identifier.
 // If the client type is localhost then the core IBC KVStore is returned, otherwise the client prefixed store is returned.
-func (k Keeper) getClientStateAndVerificationStore(ctx sdk.Context, clientID string) (exported.ClientState, sdk.KVStore, error) {
+func (k Keeper) getClientStateAndVerificationStore(ctx sdk.Context, clientID string) (exported.ClientState, store.KVStore, error) {
 	clientState, found := k.clientKeeper.GetClientState(ctx, clientID)
 	if !found {
 		return nil, nil, sdkerrors.Wrap(clienttypes.ErrClientNotFound, clientID)
@@ -440,7 +442,7 @@ func (k Keeper) VerifyMultihopMembership(
 
 	if clientState.GetLatestHeight().LT(height) {
 		return sdkerrors.Wrapf(
-			sdkerrors.ErrInvalidHeight,
+			sdkerrortypes.ErrInvalidHeight,
 			"client state height < proof height (%d < %d), please ensure the client has been updated",
 			clientState.GetLatestHeight(), height,
 		)
@@ -509,7 +511,7 @@ func (k Keeper) VerifyMultihopNonMembership(
 
 	if clientState.GetLatestHeight().LT(height) {
 		return sdkerrors.Wrapf(
-			sdkerrors.ErrInvalidHeight,
+			sdkerrortypes.ErrInvalidHeight,
 			"client state height < proof height (%d < %d), please ensure the client has been updated",
 			clientState.GetLatestHeight(), height,
 		)

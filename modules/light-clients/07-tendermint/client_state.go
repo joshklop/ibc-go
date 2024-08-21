@@ -4,11 +4,13 @@ import (
 	"strings"
 	"time"
 
+	"cosmossdk.io/store"
 	"github.com/cometbft/cometbft/light"
 	tmtypes "github.com/cometbft/cometbft/types"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	ics23 "github.com/cosmos/ics23/go"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
@@ -56,7 +58,7 @@ func (cs ClientState) GetLatestHeight() exported.Height {
 // GetTimestampAtHeight returns the timestamp in nanoseconds of the consensus state at the given height.
 func (cs ClientState) GetTimestampAtHeight(
 	ctx sdk.Context,
-	clientStore sdk.KVStore,
+	clientStore store.KVStore,
 	cdc codec.BinaryCodec,
 	height exported.Height,
 ) (uint64, error) {
@@ -78,7 +80,7 @@ func (cs ClientState) GetTimestampAtHeight(
 // has higher precedence.
 func (cs ClientState) Status(
 	ctx sdk.Context,
-	clientStore sdk.KVStore,
+	clientStore store.KVStore,
 	cdc codec.BinaryCodec,
 ) exported.Status {
 	if !cs.FrozenHeight.IsZero() {
@@ -190,7 +192,7 @@ func (cs ClientState) ZeroCustomFields() exported.ClientState {
 
 // Initialize checks that the initial consensus state is an 07-tendermint consensus state and
 // sets the client state, consensus state and associated metadata in the provided client store.
-func (cs ClientState) Initialize(ctx sdk.Context, cdc codec.BinaryCodec, clientStore sdk.KVStore, consState exported.ConsensusState) error {
+func (cs ClientState) Initialize(ctx sdk.Context, cdc codec.BinaryCodec, clientStore store.KVStore, consState exported.ConsensusState) error {
 	consensusState, ok := consState.(*ConsensusState)
 	if !ok {
 		return sdkerrors.Wrapf(clienttypes.ErrInvalidConsensus, "invalid initial consensus state. expected type: %T, got: %T",
@@ -209,7 +211,7 @@ func (cs ClientState) Initialize(ctx sdk.Context, cdc codec.BinaryCodec, clientS
 // If a zero proof height is passed in, it will fail to retrieve the associated consensus state.
 func (cs ClientState) VerifyMembership(
 	ctx sdk.Context,
-	clientStore sdk.KVStore,
+	clientStore store.KVStore,
 	cdc codec.BinaryCodec,
 	height exported.Height,
 	delayTimePeriod uint64,
@@ -220,7 +222,7 @@ func (cs ClientState) VerifyMembership(
 ) error {
 	if cs.GetLatestHeight().LT(height) {
 		return sdkerrors.Wrapf(
-			sdkerrors.ErrInvalidHeight,
+			sdkerrortypes.ErrInvalidHeight,
 			"client state height < proof height (%d < %d), please ensure the client has been updated", cs.GetLatestHeight(), height,
 		)
 	}
@@ -236,7 +238,7 @@ func (cs ClientState) VerifyMembership(
 
 	merklePath, ok := path.(commitmenttypes.MerklePath)
 	if !ok {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "expected %T, got %T", commitmenttypes.MerklePath{}, path)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidType, "expected %T, got %T", commitmenttypes.MerklePath{}, path)
 	}
 
 	consensusState, found := GetConsensusState(clientStore, cdc, height)
@@ -256,7 +258,7 @@ func (cs ClientState) VerifyMembership(
 // If a zero proof height is passed in, it will fail to retrieve the associated consensus state.
 func (cs ClientState) VerifyNonMembership(
 	ctx sdk.Context,
-	clientStore sdk.KVStore,
+	clientStore store.KVStore,
 	cdc codec.BinaryCodec,
 	height exported.Height,
 	delayTimePeriod uint64,
@@ -266,7 +268,7 @@ func (cs ClientState) VerifyNonMembership(
 ) error {
 	if cs.GetLatestHeight().LT(height) {
 		return sdkerrors.Wrapf(
-			sdkerrors.ErrInvalidHeight,
+			sdkerrortypes.ErrInvalidHeight,
 			"client state height < proof height (%d < %d), please ensure the client has been updated", cs.GetLatestHeight(), height,
 		)
 	}
@@ -282,7 +284,7 @@ func (cs ClientState) VerifyNonMembership(
 
 	merklePath, ok := path.(commitmenttypes.MerklePath)
 	if !ok {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "expected %T, got %T", commitmenttypes.MerklePath{}, path)
+		return sdkerrors.Wrapf(sdkerrortypes.ErrInvalidType, "expected %T, got %T", commitmenttypes.MerklePath{}, path)
 	}
 
 	consensusState, found := GetConsensusState(clientStore, cdc, height)
@@ -299,7 +301,7 @@ func (cs ClientState) VerifyNonMembership(
 
 // VerifyDelayPeriodPassed will ensure that at least delayTimePeriod amount of time and delayBlockPeriod number of blocks have passed
 // since consensus state was submitted before allowing verification to continue.
-func VerifyDelayPeriodPassed(ctx sdk.Context, store sdk.KVStore, proofHeight exported.Height, delayTimePeriod, delayBlockPeriod uint64) error {
+func VerifyDelayPeriodPassed(ctx sdk.Context, store store.KVStore, proofHeight exported.Height, delayTimePeriod, delayBlockPeriod uint64) error {
 	if delayTimePeriod != 0 {
 		// check that executing chain's timestamp has passed consensusState's processed time + delay time period
 		processedTime, ok := GetProcessedTime(store, proofHeight)

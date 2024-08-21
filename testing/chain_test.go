@@ -3,7 +3,7 @@ package ibctesting_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
@@ -18,12 +18,13 @@ func TestChangeValSet(t *testing.T) {
 	path := ibctesting.NewPath(chainA, chainB)
 	coord.Setup(path)
 
-	amount, ok := sdk.NewIntFromString("10000000000000000000")
+	amount, ok := math.NewIntFromString("10000000000000000000")
 	require.True(t, ok)
-	amount2, ok := sdk.NewIntFromString("30000000000000000000")
+	amount2, ok := math.NewIntFromString("30000000000000000000")
 	require.True(t, ok)
 
-	val := chainA.GetSimApp().StakingKeeper.GetValidators(chainA.GetContext(), 4)
+	val, err := chainA.GetSimApp().StakingKeeper.GetValidators(chainA.GetContext(), 4)
+	require.NoError(t, err)
 
 	chainA.GetSimApp().StakingKeeper.Delegate(chainA.GetContext(), chainA.SenderAccounts[1].SenderAccount.GetAddress(), //nolint:errcheck // ignore error for test
 		amount, types.Unbonded, val[1], true)
@@ -33,7 +34,7 @@ func TestChangeValSet(t *testing.T) {
 	coord.CommitBlock(chainA)
 
 	// verify that update clients works even after validator update goes into effect
-	err := path.EndpointB.UpdateClient()
+	err = path.EndpointB.UpdateClient()
 	require.NoError(t, err)
 	err = path.EndpointB.UpdateClient()
 	require.NoError(t, err)

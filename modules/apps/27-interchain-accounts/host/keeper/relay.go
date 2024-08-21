@@ -3,7 +3,8 @@ package keeper
 import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
+	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
@@ -94,12 +95,12 @@ func (k Keeper) authenticateTx(ctx sdk.Context, msgs []sdk.Msg, connectionID, po
 	allowMsgs := k.GetAllowMessages(ctx)
 	for _, msg := range msgs {
 		if !types.ContainsMsgType(allowMsgs, msg) {
-			return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "message type not allowed: %s", sdk.MsgTypeURL(msg))
+			return sdkerrors.Wrapf(sdkerrortypes.ErrUnauthorized, "message type not allowed: %s", sdk.MsgTypeURL(msg))
 		}
 
 		for _, signer := range msg.GetSigners() {
 			if interchainAccountAddr != signer.String() {
-				return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "unexpected signer address: expected %s, got %s", interchainAccountAddr, signer.String())
+				return sdkerrors.Wrapf(sdkerrortypes.ErrUnauthorized, "unexpected signer address: expected %s, got %s", interchainAccountAddr, signer.String())
 			}
 		}
 	}
@@ -126,7 +127,7 @@ func (k Keeper) executeMsg(ctx sdk.Context, msg sdk.Msg) (*codectypes.Any, error
 	// Each individual sdk.Result has exactly one Msg response. We aggregate here.
 	msgResponse := res.MsgResponses[0]
 	if msgResponse == nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrLogic, "got nil Msg response for msg %s", sdk.MsgTypeURL(msg))
+		return nil, sdkerrors.Wrapf(sdkerrortypes.ErrLogic, "got nil Msg response for msg %s", sdk.MsgTypeURL(msg))
 	}
 
 	return msgResponse, nil

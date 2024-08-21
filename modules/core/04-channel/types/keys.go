@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 
 	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
 )
