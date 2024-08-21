@@ -1,6 +1,7 @@
 package types
 
 import (
+	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	sdkerrortypes "github.com/cosmos/cosmos-sdk/types/errors"
@@ -27,7 +28,7 @@ func (a TransferAuthorization) MsgTypeURL() string {
 }
 
 // Accept implements Authorization.Accept.
-func (a TransferAuthorization) Accept(ctx sdk.Context, msg sdk.Msg) (authz.AcceptResponse, error) {
+func (a TransferAuthorization) Accept(ctx context.Context, msg sdk.Msg) (authz.AcceptResponse, error) {
 	msgTransfer, ok := msg.(*MsgTransfer)
 	if !ok {
 		return authz.AcceptResponse{}, sdkerrors.Wrap(sdkerrortypes.ErrInvalidType, "type mismatch")
@@ -113,13 +114,13 @@ func (a TransferAuthorization) ValidateBasic() error {
 
 // isAllowedAddress returns a boolean indicating if the receiver address is valid for transfer.
 // gasCostPerIteration gas is consumed for each iteration.
-func isAllowedAddress(ctx sdk.Context, receiver string, allowedAddrs []string) bool {
+func isAllowedAddress(ctx context.Context, receiver string, allowedAddrs []string) bool {
 	if len(allowedAddrs) == 0 {
 		return true
 	}
 
 	for _, addr := range allowedAddrs {
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "transfer authorization")
+		sdk.UnwrapSDKContext(ctx).GasMeter().ConsumeGas(gasCostPerIteration, "transfer authorization")
 		if addr == receiver {
 			return true
 		}

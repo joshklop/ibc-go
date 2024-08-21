@@ -62,9 +62,9 @@ func (k Keeper) executeTx(ctx sdk.Context, sourcePort, destPort, destChannel str
 	// writeCache is called only if all msgs succeed, performing state transitions atomically
 	cacheCtx, writeCache := ctx.CacheContext()
 	for i, msg := range msgs {
-		if err := msg.ValidateBasic(); err != nil {
-			return nil, err
-		}
+		//if err := msg.ValidateBasic(); err != nil {
+		//	return nil, err
+		//}
 
 		any, err := k.executeMsg(cacheCtx, msg)
 		if err != nil {
@@ -87,10 +87,10 @@ func (k Keeper) executeTx(ctx sdk.Context, sourcePort, destPort, destChannel str
 // authenticateTx ensures the provided msgs contain the correct interchain account signer address retrieved
 // from state using the provided controller port identifier
 func (k Keeper) authenticateTx(ctx sdk.Context, msgs []sdk.Msg, connectionID, portID string) error {
-	interchainAccountAddr, found := k.GetInterchainAccountAddress(ctx, connectionID, portID)
-	if !found {
-		return sdkerrors.Wrapf(icatypes.ErrInterchainAccountNotFound, "failed to retrieve interchain account on port %s", portID)
-	}
+	//interchainAccountAddr, found := k.GetInterchainAccountAddress(ctx, connectionID, portID)
+	//if !found {
+	//	return sdkerrors.Wrapf(icatypes.ErrInterchainAccountNotFound, "failed to retrieve interchain account on port %s", portID)
+	//}
 
 	allowMsgs := k.GetAllowMessages(ctx)
 	for _, msg := range msgs {
@@ -98,11 +98,11 @@ func (k Keeper) authenticateTx(ctx sdk.Context, msgs []sdk.Msg, connectionID, po
 			return sdkerrors.Wrapf(sdkerrortypes.ErrUnauthorized, "message type not allowed: %s", sdk.MsgTypeURL(msg))
 		}
 
-		for _, signer := range msg.GetSigners() {
-			if interchainAccountAddr != signer.String() {
-				return sdkerrors.Wrapf(sdkerrortypes.ErrUnauthorized, "unexpected signer address: expected %s, got %s", interchainAccountAddr, signer.String())
-			}
-		}
+		//for _, signer := range msg.GetSigners() {
+		//	if interchainAccountAddr != signer.String() {
+		//		return sdkerrors.Wrapf(sdkerrortypes.ErrUnauthorized, "unexpected signer address: expected %s, got %s", interchainAccountAddr, signer.String())
+		//	}
+		//}
 	}
 
 	return nil

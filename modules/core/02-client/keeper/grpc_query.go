@@ -270,15 +270,15 @@ func (q Keeper) UpgradedClientState(c context.Context, req *types.QueryUpgradedC
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	plan, found := q.GetUpgradePlan(ctx)
-	if !found {
+	plan, err := q.GetUpgradePlan(ctx)
+	if err != nil {
 		return nil, status.Error(
 			codes.NotFound, "upgrade plan not found",
 		)
 	}
 
-	bz, found := q.GetUpgradedClient(ctx, plan.Height)
-	if !found {
+	bz, err := q.GetUpgradedClient(ctx, plan.Height)
+	if err != nil {
 		return nil, status.Error(codes.NotFound, types.ErrClientNotFound.Error())
 	}
 
@@ -307,8 +307,8 @@ func (q Keeper) UpgradedConsensusState(c context.Context, req *types.QueryUpgrad
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	bz, found := q.GetUpgradedConsensusState(ctx, ctx.BlockHeight())
-	if !found {
+	bz, err := q.GetUpgradedConsensusState(ctx, ctx.BlockHeight())
+	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "%s, height %d", types.ErrConsensusStateNotFound.Error(), ctx.BlockHeight())
 	}
 
