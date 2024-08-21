@@ -3,6 +3,7 @@ package ibctesting
 import (
 	"fmt"
 	"testing"
+	"context"
 	"time"
 
 	sdkmath "cosmossdk.io/math"
@@ -183,7 +184,7 @@ func NewTestChain(t *testing.T, coord *Coordinator, chainID string) *TestChain {
 
 // GetContext returns the current context for the application.
 func (chain *TestChain) GetContext() sdk.Context {
-	return chain.App.GetBaseApp().NewContext(false, chain.CurrentHeader)
+	return chain.App.GetBaseApp().NewContext(false)
 }
 
 // GetSimApp returns the SimApp to allow usage ofnon-interface fields.
@@ -212,12 +213,13 @@ func (chain *TestChain) QueryProofAtHeight(key []byte, height int64) ([]byte, cl
 // QueryProofForStore performs an abci query with the given key and returns the proto encoded merkle proof
 // for the query and the height at which the proof will succeed on a tendermint verifier.
 func (chain *TestChain) QueryProofForStore(storeKey string, key []byte, height int64) ([]byte, clienttypes.Height) {
-	res := chain.App.Query(abci.RequestQuery{
+	res, err := chain.App.Query(context.Background(), &abci.RequestQuery{
 		Path:   fmt.Sprintf("store/%s/key", storeKey),
 		Height: height - 1,
 		Data:   key,
 		Prove:  true,
 	})
+	require.NoError(chain.T, err)
 
 	merkleProof, err := commitmenttypes.ConvertProofs(res.ProofOps)
 	require.NoError(chain.T, err)
@@ -236,12 +238,13 @@ func (chain *TestChain) QueryProofForStore(storeKey string, key []byte, height i
 // QueryUpgradeProof performs an abci query with the given key and returns the proto encoded merkle proof
 // for the query and the height at which the proof will succeed on a tendermint verifier.
 func (chain *TestChain) QueryUpgradeProof(key []byte, height uint64) ([]byte, clienttypes.Height) {
-	res := chain.App.Query(abci.RequestQuery{
+	res, err := chain.App.Query(context.Background(), &abci.RequestQuery{
 		Path:   "store/upgrade/key",
 		Height: int64(height - 1),
 		Data:   key,
 		Prove:  true,
 	})
+	require.NoError(chain.T, err)
 
 	merkleProof, err := commitmenttypes.ConvertProofs(res.ProofOps)
 	require.NoError(chain.T, err)
@@ -287,7 +290,7 @@ func (chain *TestChain) NextBlock() {
 	// val set changes returned from previous block get applied to the next validators
 	// of this block. See tendermint spec for details.
 	chain.Vals = chain.NextVals
-	chain.NextVals = ApplyValSetChanges(chain.T, chain.Vals, res.ValidatorUpdates)
+	chain.NextVals = ApplyValSetChanges(chain.T, chain.Vals, nil)
 
 	// increment the current header
 	chain.CurrentHeader = tmproto.Header{
@@ -370,9 +373,9 @@ func (chain *TestChain) GetValsAtHeight(height int64) (*tmtypes.ValidatorSet, bo
 		return nil, false
 	}
 
-	valSet := stakingtypes.Validators(histInfo.Valset)
+	valSet := stakingtypes.Validators{Validators: histInfo.Valset}
 
-	tmValidators, err := testutil.ToTmValidators(valSet, sdk.DefaultPowerReduction)
+	tmValidators, err := testutil.ToCmtValidators(valSet, sdk.DefaultPowerReduction)
 	if err != nil {
 		panic(err)
 	}
@@ -492,12 +495,12 @@ func (chain *TestChain) CreateTMClientHeader(chainID string, blockHeight int64, 
 		signerArr = append(signerArr, signers[v.Address.String()])
 	}
 
-	commit, err := tmtypes.MakeCommit(blockID, blockHeight, 1, voteSet, signerArr, timestamp)
+	commit, err := tmtypes.MakeExtCommit(blockID, blockHeight, 1, voteSet, signerArr, timestamp, false)
 	require.NoError(chain.T, err)
 
 	signedHeader := &tmproto.SignedHeader{
 		Header: tmHeader.ToProto(),
-		Commit: commit.ToProto(),
+		Commit: commit.ToCommit().ToProto(),
 	}
 
 	if tmValSet != nil { //nolint:staticcheck
